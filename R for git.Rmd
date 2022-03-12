@@ -1,0 +1,49 @@
+---
+title: "Untitled"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(tidytuesdayR)
+
+tuesdata <- tidytuesdayR::tt_load('2022-03-08')
+erasmus <- tuesdata$erasmus
+
+rm(tuesdata)
+
+erasmus_1 <- erasmus %>%
+  select(academic_year,participant_nationality,participant_gender,fewer_opportunities,special_needs)%>%
+  mutate()
+
+
+### fewer opportunities 
+# proportion of students from fewer opportunity coutries which gender was considered  more 
+ fewer_opp <- erasmus_1%>% 
+ filter(fewer_opportunities=="Yes")%>%
+   group_by(academic_year,participant_gender)%>%
+   count(participant_gender)%>%
+   ungroup()%>%
+   group_by(academic_year)%>%
+   mutate(propg = round(n/sum(n),2))
+ 
+#prop.table(table(fewer_opp$academic_year,fewer_opp$participant_gender))*100
+ 
+genderplot <- ggplot(fewer_opp) +
+  aes(x = academic_year,fill = participant_gender,y = propg) +
+  geom_col(position = "dodge") +
+  scale_fill_hue(direction = 1,name="gender") +
+  theme_light() +
+  labs(y=" ", x=" ", title = " Erasmus: Gender distribution of students with fewer opportunities ") +
+  scale_y_continuous(breaks = seq(0.1, 0.6,0.1),labels = scales::percent)+coord_flip()
+   
+   
+ggsave(filename = "genderplot.png")  
+
+
+
+```
+
+![genderplot](genderplot.png)
+ 
